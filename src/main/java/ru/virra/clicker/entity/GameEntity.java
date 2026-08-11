@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.virra.clicker.model.KeyboardTier;
 
 import java.util.UUID;
 
@@ -18,13 +19,23 @@ public class GameEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private Long currentLines;
-    private Long totalLines;
-    private Long money;
-    private int linesPerClick;
-    private int linesPerSecond;
+    private Long currentLines = 0L;
+    private Long totalLines = 0L;
+    private Long money = 0L;
+
+    private int linesPerSecond = 0;
 
     @Enumerated(EnumType.STRING)
-    private Stage stage;
+    private KeyboardTier keyboard = KeyboardTier.BASIC;
+
+    private int monitorCount = 0;
+
+    @Enumerated(EnumType.STRING)
+    private Stage stage = Stage.BEGINNER;
+
+    @Transient
+    public int getLinesPerClick() {
+        return keyboard.getLinesPerClick() + monitorCount * 5;
+    }
 
 }
