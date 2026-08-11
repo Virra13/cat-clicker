@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Cat Developer</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+<main class="game">
+
+    <h1>Cat Developer</h1>
+
+    <section class="stats">
+        <div>
+            Строк кода:
+            <strong id="current-lines">0</strong>
+        </div>
+
+        <div>
+            Всего написано:
+            <strong id="total-lines">0</strong>
+        </div>
+
+        <div>
+            Деньги:
+            <strong id="money">0</strong>
+        </div>
+
+        <div>
+            За клик:
+            <strong id="lines-per-click">1</strong>
+        </div>
+
+        <div>
+            В секунду:
+            <strong id="lines-per-second">0</strong>
+        </div>
+
+        <div>
+            Уровень:
+            <strong id="stage">BEGINNER</strong>
+        </div>
+    </section>
+
+
+    <section class="cat-area">
+
+        <button id="cat-button" class="cat-button">
+            <img
+                    src="/images/cat.png"
+                    alt="Кот-программист"
+                    class="cat"
+            >
+        </button>
+
+        <div class="click-hint">
+            Нажми на кота, чтобы написать код
+        </div>
+
+    </section>
+
+
+    <section class="panel">
+
+        <h2>Программы</h2>
+
+        <div id="programs"></div>
+
+    </section>
+
+
+    <section class="panel">
+
+        <h2>Оборудование</h2>
+
+        <div>
+            Клавиатура:
+            <strong id="keyboard">BASIC</strong>
+        </div>
+
+        <button id="buy-keyboard">
+            Улучшить клавиатуру
+        </button>
+
+        <hr>
+
+        <div>
+            Мониторы:
+            <strong id="monitor-count">0</strong> / 6
+        </div>
+
+        <button id="buy-monitor">
+            Купить монитор — 300
+        </button>
+
+    </section>
+
+
+    <section class="panel">
+
+        <h2>AI</h2>
+
+        <div>
+            Текущий AI:
+            <strong id="ai">NONE</strong>
+        </div>
+
+        <div>
+            Подписка:
+            <strong id="ai-time">нет</strong>
+        </div>
+
+        <div class="ai-buttons">
+
+            <button id="buy-free-ai">
+                Купить FREE AI — 300
+            </button>
+
+            <button
+                    class="ai-subscription"
+                    data-tier="AI_PRO">
+                AI PRO — 1500 / 15 мин
+            </button>
+
+            <button
+                    class="ai-subscription"
+                    data-tier="VIBE_CODING">
+                VIBE CODING — 5000 / 15 мин
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <section class="panel">
+        <h2>Состояние кота</h2>
+
+        <div id="message">
+            Кот пока безработный и пишет код за еду.
+        </div>
+    </section>
+
+</main>
+
+<script src="/js/game.js"></script>
+
+</body>
+
+</html>

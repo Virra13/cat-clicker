@@ -13,12 +13,12 @@ public enum ProgramType {
 
     private final long requiredLines;
     private final long rewardMoney;
-    private final Stage stage;
+    private final Stage requiredStage;
 
-    ProgramType(long requiredLines, long rewardMoney, Stage stage) {
+    ProgramType(long requiredLines, long rewardMoney, Stage requiredStage) {
         this.requiredLines = requiredLines;
         this.rewardMoney = rewardMoney;
-        this.stage = stage;
+        this.requiredStage = requiredStage;
     }
 
 }

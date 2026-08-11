@@ -5,11 +5,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.virra.clicker.dto.GameResponse;
 import ru.virra.clicker.entity.GameEntity;
-import ru.virra.clicker.entity.Stage;
+import ru.virra.clicker.exception.ContentLockedException;
 import ru.virra.clicker.exception.GameNotFoundException;
 import ru.virra.clicker.exception.NotEnoughLinesException;
 import ru.virra.clicker.mapper.GameMapper;
-import ru.virra.clicker.model.KeyboardTier;
 import ru.virra.clicker.model.ProgramType;
 import ru.virra.clicker.repository.GameRepository;
 
@@ -22,10 +21,10 @@ public class GameService {
 
     private final GameRepository gameRepository;
     private final GameMapper gameMapper;
+    private final ProgressionService progressionService;
 
     public GameResponse create() {
         GameEntity newGame = gameRepository.save(new GameEntity());
-        gameRepository.save(newGame);
 
         return gameMapper.gameEntityToDto(newGame);
     }
@@ -33,6 +32,8 @@ public class GameService {
     public GameResponse findById(UUID id) {
         GameEntity entity = gameRepository.findById(id)
                 .orElseThrow(() -> new GameNotFoundException(id, "Game not found by id"));
+        progressionService.updateGameState(entity);
+        gameRepository.save(entity);
 
         return gameMapper.gameEntityToDto(entity);
     }
@@ -47,6 +48,8 @@ public class GameService {
         entity.setCurrentLines(entity.getCurrentLines() + linesPerClick);
         entity.setTotalLines(entity.getTotalLines() + linesPerClick);
 
+        progressionService.updateGameState(entity);
+
         gameRepository.save(entity);
         return gameMapper.gameEntityToDto(entity);
     }
@@ -56,7 +59,13 @@ public class GameService {
         GameEntity entity = gameRepository.findById(id)
                 .orElseThrow(() -> new GameNotFoundException(id, "Game not found by id"));
 
+        progressionService.updateGameState(entity);
+
         long requiredLines = programType.getRequiredLines();
+
+        if (!entity.getStage().allows(programType.getRequiredStage())) {
+            throw new ContentLockedException("Program is not available at current stage");
+        }
 
         if (entity.getCurrentLines() < requiredLines) {
             throw new NotEnoughLinesException("Work better!");

@@ -10,9 +10,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ru.virra.clicker.dto.GameResponse;
 import ru.virra.clicker.entity.GameEntity;
 import ru.virra.clicker.entity.Stage;
+import ru.virra.clicker.exception.ContentLockedException;
 import ru.virra.clicker.exception.GameNotFoundException;
 import ru.virra.clicker.exception.NotEnoughLinesException;
 import ru.virra.clicker.mapper.GameMapper;
+import ru.virra.clicker.model.AiTier;
 import ru.virra.clicker.model.KeyboardTier;
 import ru.virra.clicker.model.ProgramType;
 import ru.virra.clicker.repository.GameRepository;
@@ -51,7 +53,7 @@ class GameServiceTest {
         game.setMoney(200L);
         game.setKeyboard(KeyboardTier.BASIC);
         game.setMonitorCount(0);
-        game.setLinesPerSecond(0);
+        game.setAi(AiTier.NONE);
         game.setStage(Stage.BEGINNER);
 
         response = new GameResponse();
@@ -133,6 +135,20 @@ class GameServiceTest {
     }
 
     @Test
+    void shouldUpgradeStagesAfterClick() {
+        game.setTotalLines(999L);
+
+        when(gameRepository.findById(gameId)).thenReturn(Optional.of(game));
+        when(gameMapper.gameEntityToDto(game)).thenReturn(response);
+
+        gameService.click(gameId);
+        assertEquals(1000L, game.getTotalLines());
+        assertEquals(Stage.JUNIOR, game.getStage());
+
+        verify(gameRepository).save(game);
+    }
+
+    @Test
     void shouldThrowExceptionWhenClickGameNotFound() {
         when(gameRepository.findById(gameId)).thenReturn(Optional.empty());
 
@@ -161,6 +177,25 @@ class GameServiceTest {
     }
 
     @Test
+    void shouldThrowExceptThenSellProgram() {
+        game.setCurrentLines(500L);
+        game.setMoney(200L);
+
+        when(gameRepository.findById(gameId)).thenReturn(Optional.of(game));
+
+        when(gameMapper.gameEntityToDto(game)).thenReturn(response);
+
+        assertThrows(
+                ContentLockedException.class,
+                () -> gameService.sell(gameId, ProgramType.TODO_APP)
+        );
+
+        assertEquals(500L, game.getCurrentLines());
+        assertEquals(200L, game.getMoney());
+        verify(gameRepository, never()).save(any());
+    }
+
+    @Test
     void shouldThrowExceptionWhenNotEnoughLinesForProgram() {
         game.setCurrentLines(10L);
         when(gameRepository.findById(gameId)).thenReturn(Optional.of(game));
@@ -175,5 +210,7 @@ class GameServiceTest {
 
         verify(gameRepository, never()).save(any());
     }
+
+
 
 }

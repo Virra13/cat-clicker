@@ -4,6 +4,7 @@ package ru.virra.clicker.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.virra.clicker.dto.GameResponse;
+import ru.virra.clicker.model.AiTier;
 import ru.virra.clicker.model.ProgramType;
 import ru.virra.clicker.model.UpgradeType;
 import ru.virra.clicker.service.GameService;
@@ -45,5 +46,14 @@ public class GameController {
             @PathVariable UpgradeType type) {
 
         return upgradeService.buyUpgrade(id, type);
+    }
+
+    @PostMapping("/{id}/ai/{tier}/buy")
+    public GameResponse buyAi(@PathVariable UUID id, @PathVariable AiTier tier) {
+        if (tier == AiTier.FREE_AI) {
+            return upgradeService.buyFreeAi(id);
+        } else {
+        return upgradeService.buyAi(id, tier);
+        }
     }
 }
